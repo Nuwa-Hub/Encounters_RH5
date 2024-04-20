@@ -137,3 +137,6 @@ dmypy.json
 .idea/
 
 *.wav
+*.png
+*.jpg
+*.jpeg
