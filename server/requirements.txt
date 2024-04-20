@@ -4,3 +4,4 @@ motor == 2.4.0
 python-dotenv
 pyyaml
 orjson
+pyannote.audio
