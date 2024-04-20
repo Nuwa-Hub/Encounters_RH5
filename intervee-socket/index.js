@@ -1,21 +1,30 @@
-const app = require("express")();
-const server = require("http").createServer(app);
-
+const express = require("express");
+const http = require("http");
+const mongoose = require("mongoose");
 const cors = require("cors");
-
-const io = require("socket.io")(server, {
+const socketio = require("socket.io");
+const authRoutes = require("./routes/authRoutes");
+const PORT = process.env.PORT || 5000;
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server, {
     cors: {
         origin: "*",
         methods: ["GET", "POST"]
     }
 });
 
+
+
 app.use(cors());
-const PORT = process.env.PORT || 5000;
-app.get("/", (req, res) => {
-    console.log("GET request received at /");
-    res.send("Server is running.");
-});
+app.use(express.json());
+// app.use("/", (req, res, next) => {
+//     console.log("GET request received at /");
+//     res.send("Server is running.");
+// });
+
+
+app.use("/auth", authRoutes);
 
 io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
@@ -38,6 +47,16 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+
+mongoose.connect("mongodb+srv://jmbp1999:paty1234@cluster0.89zhh.mongodb.net/intervee", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => {
+    console.log("MongoDB connected");
+    // Start the server after successful MongoDB connection
+    server.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}).catch(err => {
+    console.log(err);
 });

@@ -14,17 +14,44 @@ const ContextProvider = ({ children }) => {
   const [name, setName] = useState('');
   const [call, setCall] = useState({});
   const [me, setMe] = useState('');
+  const [capturedImages, setCapturedImages] = useState([]);
+  const streamRef = useRef(); // Ref to hold the stream
+
 
   const myVideo = useRef();
   const userVideo = useRef();
   const connectionRef = useRef();
 
+  const captureImage = () => {
+    console.log("Stream")
+    console.log(streamRef.current)
+    if (streamRef.current) {
+      console.log("Stream exists, capturing image...");
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = streamRef.current.getVideoTracks()[0].getSettings().width;
+      canvas.height = streamRef.current.getVideoTracks()[0].getSettings().height;
+      ctx.drawImage(myVideo.current, 0, 0);
+    
+      const imageURL = canvas.toDataURL('image/jpeg'); // Adjust format if needed
+      console.log(imageURL)
+      setCapturedImages([...capturedImages, imageURL]);
+    } else {
+      console.log("No stream available, cannot capture image.");
+    }
+  };
+
+
+  useEffect(()=>{
+    console.log(capturedImages)
+  },[])
   useEffect(() => {
     console.log("useEffect called");
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then((currentStream) => {
           console.log("getUserMedia success");
           setStream(currentStream);
+          streamRef.current = currentStream;
 
           myVideo.current.srcObject = currentStream;
       });
@@ -38,6 +65,8 @@ const ContextProvider = ({ children }) => {
       console.log("callUser event received");
       setCall({ isReceivingCall: true, from, name: callerName, signal });
     });
+    const captureInterval = setInterval(captureImage, 5000);
+    return () => clearInterval(captureInterval);
   }, []);
 
   const answerCall = () => {
