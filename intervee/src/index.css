@@ -1,0 +1,17 @@
+html {
+  font-family: "DM Sans", sans-serif !important;
+	background-image: radial-gradient(#bebebe 1px, transparent 1px), radial-gradient(#CECECE 1px, transparent 1px);
+	background-size: 44px 44px;
+	background-position: 0 0, 22px 22px;
+	background-color: #F5F5FF;
+}
+
+*{
+	margin: 0;
+	padding:0;
+}
+.body{
+	font-family: "DM Sans", sans-serif !important;
+  margin: 0;
+  padding:0;
+}
