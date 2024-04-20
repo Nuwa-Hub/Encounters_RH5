@@ -7,4 +7,6 @@ orjson
 pyannote.audio
 insightface
 onnxruntime
-python-multipart 
+python-multipart
+kafka-python
+"pymongo[srv]"
