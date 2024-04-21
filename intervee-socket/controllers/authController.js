@@ -4,6 +4,11 @@ const Meet  = require("../models/Meet");
 const Image = require("../models/Image");
 const nodemailer=require('nodemailer');
 
+const kafka = require('kafka-node');
+const Producer = kafka.Producer;
+const client = new kafka.KafkaClient({ kafkaHost: 'localhost:9092' }); // Update with your Kafka broker details
+const producer = new Producer(client);
+
 exports.signup = async (req, res) => {
   try {
     const { email, password, role } = req.body;
@@ -147,8 +152,24 @@ exports.saveImage = async (req, res) => {
 exports.meetingEnded = async (req, res) => {
   try {
     const { meetId, userId } = req.body;
-    console.log("Meeting ended", meetId, userId)
-    res.status(201).json({ message: 'meeting ended' });
+    console.log("Meeting ended", meetId, userId);
+
+    const payload = {
+      meet_id: meetId,
+      user_id: userId
+    };
+
+    const kafkaMessage = JSON.stringify(payload);
+
+    producer.send([{ topic: kafkaTopic, messages: kafkaMessage }], (err, data) => {
+      if (err) {
+        console.error('Error producing message to Kafka:', err);
+        res.status(500).json({ error: 'Error producing message to Kafka' });
+      } else {
+        console.log('Message produced to Kafka topic:', kafkaTopic);
+        res.status(201).json({ message: 'Meeting ended. Message sent to Kafka.' });
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

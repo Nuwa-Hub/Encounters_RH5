@@ -106,6 +106,8 @@ const ContextProvider = ({ children }) => {
     try {
       const user = JSON.parse(localStorage.getItem('token')); 
       const response = await axios.post('http://localhost:5000/auth/meetingended', { userId:user.userId, meetId:me });
+      
+    window.location.reload();
       console.log(response.data);
     } catch (error) {
       console.error('Error creating meet:', error.response.data.message);
@@ -207,7 +209,6 @@ const ContextProvider = ({ children }) => {
 
     connectionRef.current.destroy();
 
-    // window.location.reload();
   };
 
   return (
