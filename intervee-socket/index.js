@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const socketio = require("socket.io");
 const authRoutes = require("./routes/authRoutes");
+const imageRoutes = require('./routes/fileRoutes');
+
 const PORT = process.env.PORT || 5000;
 const app = express();
 const server = http.createServer(app);
