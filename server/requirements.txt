@@ -5,3 +5,8 @@ python-dotenv
 pyyaml
 orjson
 pyannote.audio
+insightface
+onnxruntime
+python-multipart
+kafka-python
+"pymongo[srv]"
