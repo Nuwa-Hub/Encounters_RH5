@@ -1,22 +1,29 @@
-# from typing import Any, Optional
+from typing import Any, Optional
+from bson import ObjectId
 
-# from server.models import client, async_client
-
-
-# def creating_image(email, password, role):
-#     document = {
-#         "email": email,
-#         "password": password,
-#         "role" : role,
-#     }
-#     result = client.intervee.users.insert_one(document)
-
-#     return result
+from server.models import client, async_client
 
 
-# async def get_user_by_id(query,projection):
-#     result = await client.intervee.users.find_one(query, projection=projection)
-#     return result
+def creating_image(email, password, role):
+    document = {
+        "email": email,
+        "password": password,
+        "role" : role,
+    }
+    result = client.intervee.users.insert_one(document)
+
+    return result
+
+
+async def get_user_by_id(user_id):
+    query={
+        "_id": ObjectId(user_id)
+    }
+    result = await client.intervee.users.find_one(query)
+    return result
+
+
+
 
 
 # async def get_users(query, projection, sort, skip):

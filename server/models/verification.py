@@ -29,6 +29,16 @@ async def get_verification_by_meeting_id(meeting_id):
     return result
 
 
+async def get_verification_by_user_meeting_id(user_id,meeting_id):
+    query={
+        "user_id":user_id,
+        "meeting_id": meeting_id
+    }
+    result = await client.intervee.verification.find_one(query)
+    return result
+
+
+
 # def get_verification_sync(query, projection, sort, skip, limit):
 #     result = async_client.intervee.verification.find(query, projection=projection).sort(sort).skip(skip).limit(limit)
 #     return result
