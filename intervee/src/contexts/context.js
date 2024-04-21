@@ -2,6 +2,7 @@ import {Buffer} from 'buffer';
 import React, { createContext, useState, useRef, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import Peer from 'simple-peer';
+import axios from 'axios';
 import { dataUriToBuffer } from 'data-uri-to-buffer';
 import AWS from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
@@ -23,6 +24,7 @@ const ContextProvider = ({ children }) => {
   const userVideo = useRef();
   const connectionRef = useRef();
   const [file, setFile] = useState(null);
+  const [user,setUser] = useState(null)
 
   const captureImage = async () => {
     console.log("Stream")
@@ -65,13 +67,15 @@ const ContextProvider = ({ children }) => {
         Body: buf,
         ContentType: 'image/jpeg', 
         ContentEncoding: 'base64',
-
       };
-
+      const imageUrl = `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com/${params.Key}`;
       console.log("Starting to upload...")
   
       try {
         const upload = await s3.putObject(params).promise();
+
+        const response = await axios.post('http://localhost:5000/auth/saveimage', { userId: user.userId, imageUrl: imageUrl, meetId: me });
+        console.log(response);
         console.log(upload);
   
       } catch (error) {
@@ -82,6 +86,45 @@ const ContextProvider = ({ children }) => {
      uploadFile();
     }
   },[file])
+
+  
+  const createMeet = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('token')); 
+      console.log(user);
+      setUser(user)
+
+      const response = await axios.post('http://localhost:5000/auth/createmeet', { userId:user.userId, meetId:me });
+      console.log(response);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error creating meet:', error.response.data.message);
+    }
+  };
+
+  const meetEnded = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('token')); 
+      const response = await axios.post('http://localhost:5000/auth/meetingended', { userId:user.userId, meetId:me });
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error creating meet:', error.response.data.message);
+    }
+  };
+
+  useEffect(()=>{
+    if(me){
+      createMeet();
+    }
+  },[me])
+
+  useEffect(()=>{
+    if(callEnded){
+    
+      meetEnded();
+    }
+
+  },[callEnded])
 
 
   useEffect(() => {
@@ -154,13 +197,17 @@ const ContextProvider = ({ children }) => {
     connectionRef.current = peer;
   };
 
+  
+
   const leaveCall = () => {
     console.log("leaveCall called");
+
     setCallEnded(true);
+
 
     connectionRef.current.destroy();
 
-    window.location.reload();
+    // window.location.reload();
   };
 
   return (

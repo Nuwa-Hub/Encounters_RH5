@@ -16,6 +16,7 @@
     "buffer": "^6.0.3",
     "data-uri-to-buffer": "^6.0.2",
     "jwt-decode": "^4.0.0",
+    "kafkajs": "^2.2.4",
     "peerjs": "^1.5.2",
     "react": "^18.2.0",
     "react-copy-to-clipboard": "^5.1.0",

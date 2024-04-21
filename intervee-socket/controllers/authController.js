@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require("../models/User");
+const Meet  = require("../models/Meet");
+const Image = require("../models/Image");
 const nodemailer=require('nodemailer');
 
 exports.signup = async (req, res) => {
@@ -93,6 +95,64 @@ exports.createInterviewee = async (req, res) => {
     }
   };
 
+  exports.createmeet = async (req, res) => {
+    try {
+      const { meetId, userId } = req.body;
+      
+      const newMeet = new Meet({
+        meetId,
+        userId
+      });
+        await newMeet.save();
+  
+      res.status(201).json({ message: 'Meet created successfully', meet: newMeet });
+    } catch (error) {
+      console.error('Error creating meet:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+  
+  exports.getAllMeets = async (req, res) => {
+    try {
+      // Fetch all meets from the database
+      const meets = await Meet.find();
+  
+      res.status(200).json(meets);
+    } catch (error) {
+      console.error('Error getting meets:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+
+  
+exports.saveImage = async (req, res) => {
+  try {
+    const { meetId, userId, imageUrl } = req.body;
+    const newImage = new Image({
+      meetId,
+      userId,
+      imageUrl
+    });
+    
+    await newImage.save();
+
+    res.status(201).json({ message: 'Image saved successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+exports.meetingEnded = async (req, res) => {
+  try {
+    const { meetId, userId } = req.body;
+    console.log("Meeting ended", meetId, userId)
+    res.status(201).json({ message: 'meeting ended' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 function generateRandomPassword(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
