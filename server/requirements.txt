@@ -10,4 +10,5 @@ insightface
 onnxruntime
 python-multipart
 kafka-python
-pymongo[srv]
+bson
+"pymongo[srv]"

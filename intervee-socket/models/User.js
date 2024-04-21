@@ -15,6 +15,9 @@ const userSchema = new mongoose.Schema({
         enum: ["Interviewer", "Interviewee"],
         default: "Interviewer"
     },
+    image: String,
+    nicImage: String,
+    cv: String
 });
 
 const User = mongoose.model("User", userSchema);
